@@ -39,6 +39,27 @@ router.get("/teachers/:sid", async (req, res) => {
   }
 });
 
+
+// Get all teachers that are teaching to a student.
+router.get('/getteachers/:sid', function(req,res,next) {
+
+  const { sid } = req.params;
+
+  Class.find({'students.sid':sid} , {teacher:1}).populate('teachers.tid')
+  .exec()
+  .then((result) => {
+      if(result.length == 0){
+        res.statusCode=404;
+        res.json({message:"Teacher not found"});
+      }
+      else{
+          res.statusCode=200;
+          res.json(result);
+      }
+  }, (err) => {return (err)})
+})
+
+
 // Route to get grades for a student
 router.get("/grades/:sid", async (req, res) => {
   const { sid } = req.params;
